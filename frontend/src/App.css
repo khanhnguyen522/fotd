@@ -1,0 +1,391 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --paper: #f5f3ee;
+  --paper-raised: #ffffff;
+  --ink: #17140f;
+  --ink-soft: #8b8478;
+  --line: #e6e1d5;
+  --accent: #313f5e;
+  --accent-dark: #202a41;
+  --stitch: rgba(201, 163, 103, 0.6);
+  --error: #a8402b;
+
+  --display: "Fraunces", Georgia, serif;
+  --sans: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* Diagonal twill weave — the header's material, and the Generate button's. */
+  --twill:
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.12) 0px,
+      rgba(255, 255, 255, 0.12) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(0, 0, 0, 0.16) 2px,
+      rgba(0, 0, 0, 0.16) 3px,
+      transparent 3px,
+      transparent 4px
+    );
+
+  --shadow-sm: 0 1px 2px rgba(23, 20, 15, 0.06);
+  --shadow-md: 0 4px 12px rgba(23, 20, 15, 0.08);
+  --shadow-lg: 0 12px 28px rgba(23, 20, 15, 0.12);
+
+  font: 16px/1.5 var(--sans);
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.app-shell {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+}
+
+/* Header — denim, the app's core material */
+.app-header {
+  background-color: var(--accent-dark);
+  background-image: var(--twill);
+  padding: 34px 20px 26px;
+  text-align: center;
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wordmark-hole {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid var(--paper);
+  display: inline-block;
+  opacity: 0.6;
+}
+
+.wordmark-text {
+  font-family: var(--display);
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--paper-raised);
+}
+
+.tagline {
+  margin: 8px 0 0;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--stitch);
+}
+
+/* Tab switcher — clean, with a tiny handle glyph on the active tab as
+   a quiet nod to opening a closet door, instead of literal wood/metal texture */
+.tab-switcher {
+  display: flex;
+  gap: 6px;
+  margin: 22px 20px 8px;
+  padding: 5px;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 11px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.tab-btn.active {
+  background-color: var(--ink);
+  color: var(--paper-raised);
+}
+
+/* Two short bars, like a small wardrobe pull handle */
+.handle-icon {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.handle-icon span {
+  width: 2px;
+  height: 11px;
+  border-radius: 1px;
+  background: var(--stitch);
+}
+
+.app-main {
+  flex: 1;
+  padding: 16px 20px 48px;
+}
+
+/* Upload card — quiet, neutral border */
+.upload-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 20px;
+  margin-bottom: 22px;
+  border: 1.5px dashed var(--line);
+  border-radius: 14px;
+  cursor: pointer;
+  color: var(--ink);
+  background: var(--paper-raised);
+  transition:
+    transform 0.1s ease,
+    border-color 0.15s ease;
+}
+
+.upload-card:active {
+  transform: scale(0.98);
+  border-color: var(--accent);
+}
+
+.upload-icon {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.upload-label {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 14px;
+  padding: 28px 0;
+}
+
+.error-text {
+  text-align: center;
+  color: var(--error);
+  font-size: 14px;
+  margin: 12px 0;
+  font-weight: 600;
+}
+
+/* Item grid */
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.item-card {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-md);
+}
+
+.item-card img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+}
+
+/* Tag chip — quiet ink label with a die-cut edge */
+.tag-chip {
+  position: absolute;
+  bottom: 9px;
+  left: -3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--ink);
+  color: var(--paper-raised);
+  padding: 5px 12px 5px 14px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
+}
+
+.tag-chip-hole {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--paper-raised);
+  flex-shrink: 0;
+  margin-left: 4px;
+  opacity: 0.6;
+}
+
+.tag-chip-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Season pills — solid accent, no texture */
+.season-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.pill {
+  padding: 9px 18px;
+  border: 1px solid var(--line);
+  background-color: var(--paper-raised);
+  border-radius: 999px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pill.active {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* Generate button — denim texture + topstitch, the app's other
+   signature moment alongside the header */
+.generate-btn {
+  width: 100%;
+  padding: 16px;
+  margin-bottom: 24px;
+  border: none;
+  border-radius: 12px;
+  background-color: var(--accent);
+  background-image: var(--twill);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition:
+    transform 0.1s ease,
+    background-color 0.15s ease;
+  position: relative;
+}
+
+.generate-btn::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px dashed var(--stitch);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.generate-btn:active {
+  transform: scale(0.98);
+  background-color: var(--accent-dark);
+}
+
+.generate-btn:disabled {
+  opacity: 0.6;
+  transform: none;
+}
+
+/* Outfit cards */
+.outfit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.outfit-card {
+  border-radius: 16px;
+  padding: 16px;
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-lg);
+}
+
+.outfit-card-header {
+  margin-bottom: 12px;
+}
+
+.outfit-number {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.outfit-pieces {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 380px) {
+  .outfit-pieces {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.outfit-piece {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.outfit-piece img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+}
+
+.piece-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--ink-soft);
+}
