@@ -1,0 +1,16 @@
+services:
+  db:
+    container_name: fotd-postgres
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: fotd_user
+      POSTGRES_PASSWORD: fotd_pass
+      POSTGRES_DB: fotd_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
