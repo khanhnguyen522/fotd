@@ -46,7 +46,7 @@ app.post("/items", upload.single("image"), async (req, res) => {
       return res.status(400).json({ error: "No image file was uploaded" });
     }
 
-    const imageUrl = `http://localhost:3001/uploads/${req.file.filename}`;
+    const imageUrl = `${process.env.BASE_URL}/uploads/${req.file.filename}`;
     const imagePath = req.file.path;
 
     // call Claude to auto-tag the clothing item
