@@ -1,8 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&display=swap");
 
+html {
+  scrollbar-gutter: stable;
+}
+
 :root {
   --paper: #f5f3ee;
-  --paper-raised: #ffffff;
+  --paper-raised: #fff;
   --ink: #17140f;
   --ink-soft: #8b8478;
   --line: #e6e1d5;
@@ -10,27 +14,19 @@
   --accent-dark: #202a41;
   --stitch: rgba(201, 163, 103, 0.6);
   --error: #a8402b;
-
   --display: "Fraunces", Georgia, serif;
   --sans: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
-
-  /* Diagonal twill weave — the header's material, and the Generate button's. */
   --twill:
     repeating-linear-gradient(
       45deg,
-      rgba(255, 255, 255, 0.12) 0px,
-      rgba(255, 255, 255, 0.12) 1px,
-      transparent 1px,
-      transparent 4px
+      rgba(255, 255, 255, 0.12) 0 1px,
+      transparent 1px 4px
     ),
     repeating-linear-gradient(
       45deg,
-      rgba(0, 0, 0, 0.16) 2px,
-      rgba(0, 0, 0, 0.16) 3px,
-      transparent 3px,
-      transparent 4px
+      rgba(0, 0, 0, 0.16) 2px 3px,
+      transparent 3px 4px
     );
-
   --shadow-sm: 0 1px 2px rgba(23, 20, 15, 0.06);
   --shadow-md: 0 4px 12px rgba(23, 20, 15, 0.08);
   --shadow-lg: 0 12px 28px rgba(23, 20, 15, 0.12);
@@ -44,7 +40,6 @@
 * {
   box-sizing: border-box;
 }
-
 body {
   margin: 0;
 }
@@ -77,14 +72,11 @@ body {
   height: 9px;
   border-radius: 50%;
   border: 1.5px solid var(--paper);
-  display: inline-block;
   opacity: 0.6;
 }
 
 .wordmark-text {
-  font-family: var(--display);
-  font-size: 34px;
-  font-weight: 700;
+  font: 700 34px var(--display);
   letter-spacing: 1px;
   color: var(--paper-raised);
 }
@@ -98,8 +90,7 @@ body {
   color: var(--stitch);
 }
 
-/* Tab switcher — clean, with a tiny handle glyph on the active tab as
-   a quiet nod to opening a closet door, instead of literal wood/metal texture */
+/* Tab switcher, with a small handle glyph on the active tab */
 .tab-switcher {
   display: flex;
   gap: 6px;
@@ -120,27 +111,23 @@ body {
   border: none;
   background: transparent;
   border-radius: 8px;
-  font: inherit;
-  font-weight: 600;
-  font-size: 14px;
+  font: 600 14px var(--sans);
   color: var(--ink-soft);
   cursor: pointer;
   transition:
-    background 0.15s ease,
-    color 0.15s ease;
+    background 0.15s,
+    color 0.15s;
 }
 
 .tab-btn.active {
-  background-color: var(--ink);
+  background: var(--ink);
   color: var(--paper-raised);
 }
 
-/* Two short bars, like a small wardrobe pull handle */
 .handle-icon {
   display: inline-flex;
   gap: 2px;
 }
-
 .handle-icon span {
   width: 2px;
   height: 11px;
@@ -153,7 +140,7 @@ body {
   padding: 16px 20px 48px;
 }
 
-/* Upload card — quiet, neutral border */
+/* Upload card */
 .upload-card {
   display: flex;
   align-items: center;
@@ -168,22 +155,19 @@ body {
   color: var(--ink);
   background: var(--paper-raised);
   transition:
-    transform 0.1s ease,
-    border-color 0.15s ease;
+    transform 0.1s,
+    border-color 0.15s;
 }
 
 .upload-card:active {
   transform: scale(0.98);
   border-color: var(--accent);
 }
-
 .upload-icon {
   font-size: 20px;
   font-weight: 700;
-  line-height: 1;
   color: var(--accent);
 }
-
 .upload-label {
   font-weight: 600;
   font-size: 15px;
@@ -195,7 +179,6 @@ body {
   font-size: 14px;
   padding: 28px 0;
 }
-
 .error-text {
   text-align: center;
   color: var(--error);
@@ -204,7 +187,7 @@ body {
   font-weight: 600;
 }
 
-/* Item grid */
+/* Item grid + tag chip (die-cut garment label) */
 .item-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -226,7 +209,6 @@ body {
   display: block;
 }
 
-/* Tag chip — quiet ink label with a die-cut edge */
 .tag-chip {
   position: absolute;
   bottom: 9px;
@@ -237,8 +219,7 @@ body {
   background: var(--ink);
   color: var(--paper-raised);
   padding: 5px 12px 5px 14px;
-  font-size: 10px;
-  font-weight: 600;
+  font: 600 10px var(--sans);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
@@ -249,18 +230,16 @@ body {
   height: 4px;
   border-radius: 50%;
   background: var(--paper-raised);
-  flex-shrink: 0;
-  margin-left: 4px;
   opacity: 0.6;
+  margin-left: 4px;
 }
-
 .tag-chip-text {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Season pills — solid accent, no texture */
+/* Season pills */
 .season-pills {
   display: flex;
   flex-wrap: wrap;
@@ -271,25 +250,23 @@ body {
 .pill {
   padding: 9px 18px;
   border: 1px solid var(--line);
-  background-color: var(--paper-raised);
+  background: var(--paper-raised);
   border-radius: 999px;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
+  font: 600 13px var(--sans);
   color: var(--ink-soft);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s;
 }
 
 .pill.active {
-  background-color: var(--accent);
+  background: var(--accent);
   border-color: var(--accent);
   color: #fff;
 }
 
-/* Generate button — denim texture + topstitch, the app's other
-   signature moment alongside the header */
+/* Generate button — denim texture + topstitch */
 .generate-btn {
+  position: relative;
   width: 100%;
   padding: 16px;
   margin-bottom: 24px;
@@ -298,17 +275,14 @@ body {
   background-color: var(--accent);
   background-image: var(--twill);
   color: #fff;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 700;
+  font: 700 14px var(--sans);
   text-transform: uppercase;
   letter-spacing: 1px;
   cursor: pointer;
   box-shadow: var(--shadow-md);
   transition:
-    transform 0.1s ease,
-    background-color 0.15s ease;
-  position: relative;
+    transform 0.1s,
+    background-color 0.15s;
 }
 
 .generate-btn::after {
@@ -324,7 +298,6 @@ body {
   transform: scale(0.98);
   background-color: var(--accent-dark);
 }
-
 .generate-btn:disabled {
   opacity: 0.6;
   transform: none;
@@ -347,11 +320,8 @@ body {
 .outfit-card-header {
   margin-bottom: 12px;
 }
-
 .outfit-number {
-  font-family: var(--display);
-  font-size: 15px;
-  font-weight: 700;
+  font: 700 15px var(--display);
   color: var(--accent);
 }
 
@@ -360,7 +330,6 @@ body {
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
 }
-
 @media (max-width: 380px) {
   .outfit-pieces {
     grid-template-columns: repeat(2, 1fr);
@@ -373,7 +342,6 @@ body {
   align-items: center;
   gap: 5px;
 }
-
 .outfit-piece img {
   width: 100%;
   aspect-ratio: 1;
@@ -381,7 +349,6 @@ body {
   border-radius: 10px;
   border: 1px solid var(--line);
 }
-
 .piece-label {
   font-size: 10px;
   font-weight: 600;

@@ -3,9 +3,7 @@
   --text-h: #08060d;
   --bg: #fff;
   --border: #e5e4e7;
-
   --sans: system-ui, "Segoe UI", Roboto, sans-serif;
-  --heading: system-ui, "Segoe UI", Roboto, sans-serif;
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
@@ -30,19 +28,21 @@ body {
   width: 1126px;
   max-width: 100%;
   margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
+  box-sizing: border-box;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
+  text-align: center;
+  border-inline: 1px solid var(--border);
 }
 
 h1,
 h2 {
-  font-family: var(--heading);
-  font-weight: 500;
+  font: 500 1em var(--sans);
   color: var(--text-h);
+}
+p {
+  margin: 0;
 }
 
 h1 {
@@ -54,6 +54,7 @@ h1 {
     margin: 20px 0;
   }
 }
+
 h2 {
   font-size: 24px;
   line-height: 118%;
@@ -62,7 +63,4 @@ h2 {
   @media (max-width: 1024px) {
     font-size: 20px;
   }
-}
-p {
-  margin: 0;
 }
