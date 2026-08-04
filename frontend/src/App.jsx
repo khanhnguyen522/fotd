@@ -156,7 +156,6 @@ function App() {
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
-                capture="environment"
                 onChange={handleFileChange}
                 hidden
               />
