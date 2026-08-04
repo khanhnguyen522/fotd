@@ -72,6 +72,22 @@ function App() {
     fetchItems();
   }, []);
 
+  // lock background scroll while the edit sheet is open
+  useEffect(() => {
+    if (editingItem) {
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
+      return () => {
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.width = "";
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [editingItem]);
+
   const fetchItems = async () => {
     try {
       const res = await axios.get(`${API_URL}/items`);

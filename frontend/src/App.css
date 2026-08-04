@@ -388,6 +388,7 @@ body {
   padding: 12px 20px calc(28px + env(safe-area-inset-bottom));
   max-height: 85vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
   box-shadow: var(--shadow-lg);
 }
 
