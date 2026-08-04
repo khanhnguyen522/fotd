@@ -67,6 +67,9 @@ function App() {
   });
   const [savingEdit, setSavingEdit] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [dragY, setDragY] = useState(0);
+  const [isDraggingSheet, setIsDraggingSheet] = useState(false);
+  const dragStartY = useRef(0);
 
   useEffect(() => {
     fetchItems();
@@ -151,10 +154,31 @@ function App() {
       color: item.color || "",
       season: item.season || "",
     });
+    setDragY(0);
   };
 
   const closeEditSheet = () => {
     setEditingItem(null);
+    setDragY(0);
+  };
+
+  const handleSheetTouchStart = (e) => {
+    dragStartY.current = e.touches[0].clientY;
+    setIsDraggingSheet(true);
+  };
+
+  const handleSheetTouchMove = (e) => {
+    const delta = e.touches[0].clientY - dragStartY.current;
+    if (delta > 0) setDragY(delta);
+  };
+
+  const handleSheetTouchEnd = () => {
+    setIsDraggingSheet(false);
+    if (dragY > 120) {
+      closeEditSheet();
+    } else {
+      setDragY(0);
+    }
   };
 
   const handleSaveEdit = async () => {
@@ -360,8 +384,22 @@ function App() {
 
       {editingItem && (
         <div className="modal-overlay" onClick={closeEditSheet}>
-          <div className="edit-sheet" onClick={(e) => e.stopPropagation()}>
-            <div className="edit-sheet-handle" />
+          <div
+            className="edit-sheet"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              transform: `translateY(${dragY}px)`,
+              transition: isDraggingSheet ? "none" : "transform 0.25s ease",
+            }}
+          >
+            <div
+              className="edit-sheet-drag-zone"
+              onTouchStart={handleSheetTouchStart}
+              onTouchMove={handleSheetTouchMove}
+              onTouchEnd={handleSheetTouchEnd}
+            >
+              <div className="edit-sheet-handle" />
+            </div>
 
             <img
               src={editingItem.image_url}

@@ -392,12 +392,18 @@ body {
   box-shadow: var(--shadow-lg);
 }
 
+.edit-sheet-drag-zone {
+  padding: 10px 0 16px;
+  display: flex;
+  justify-content: center;
+  touch-action: none;
+}
+
 .edit-sheet-handle {
   width: 36px;
   height: 4px;
   border-radius: 2px;
   background: var(--line);
-  margin: 0 auto 16px;
 }
 
 .edit-sheet-image {
