@@ -94,14 +94,15 @@ app.get("/items", async (req, res) => {
   }
 });
 
-// update an item's tags (category, color, season)
+// update an item's tags (category, color, season, note)
 app.put("/items/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { category, color, season } = req.body;
+    const { category, color, season, note } = req.body;
+
     const result = await pool.query(
-      "UPDATE items SET category = $1, color = $2, season = $3 WHERE id = $4 RETURNING *",
-      [category, color, season, id],
+      "UPDATE items SET category = $1, color = $2, season = $3, note = $4 WHERE id = $5 RETURNING *",
+      [category, color, season, note, id],
     );
 
     if (result.rows.length === 0) {

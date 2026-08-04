@@ -21,7 +21,7 @@ const CATEGORIES = [
   { value: "accessory", label: "Accessories" },
 ];
 
-function TagChip({ category, color }) {
+function TagChip({ category, color, note }) {
   if (!category) return null;
   return (
     <div className="tag-chip">
@@ -29,6 +29,7 @@ function TagChip({ category, color }) {
       <span className="tag-chip-text">
         {category}
         {color ? ` · ${color}` : ""}
+        {note ? ` · ${note}` : ""}
       </span>
     </div>
   );
@@ -64,6 +65,7 @@ function App() {
     category: "",
     color: "",
     season: "",
+    note: "",
   });
   const [savingEdit, setSavingEdit] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
@@ -153,6 +155,7 @@ function App() {
       category: item.category || "",
       color: item.color || "",
       season: item.season || "",
+      note: item.note || "",
     });
     setDragY(0);
   };
@@ -317,7 +320,11 @@ function App() {
                     onClick={() => openEditSheet(item)}
                   >
                     <img src={item.image_url} alt="clothing item" />
-                    <TagChip category={item.category} color={item.color} />
+                    <TagChip
+                      category={item.category}
+                      color={item.color}
+                      note={item.note}
+                    />
                   </div>
                 ))}
               </div>
@@ -446,6 +453,17 @@ function App() {
                 setEditForm((f) => ({ ...f, color: e.target.value }))
               }
               placeholder="e.g. navy, olive, cream"
+            />
+
+            <label className="edit-field-label">Note</label>
+            <input
+              type="text"
+              className="edit-color-input"
+              value={editForm.note}
+              onChange={(e) =>
+                setEditForm((f) => ({ ...f, note: e.target.value }))
+              }
+              placeholder="e.g. Zara slim fit, bought in Da Nang"
             />
 
             <div className="edit-sheet-actions">
