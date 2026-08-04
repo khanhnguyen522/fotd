@@ -2,7 +2,7 @@
 
 html {
   width: 100%;
-  overflow-y: scroll; /* luôn có track scrollbar, chiều rộng khả dụng không bao giờ đổi giữa các tab */
+  overflow-y: scroll;
 }
 
 :root {
@@ -59,6 +59,7 @@ body {
   padding-right: env(safe-area-inset-right);
 }
 
+/* Header — denim, the app's core material */
 .app-header {
   background-color: var(--accent-dark);
   background-image: var(--twill);
@@ -95,6 +96,7 @@ body {
   color: var(--stitch);
 }
 
+/* Tab switcher, with a small handle glyph on the active tab */
 .tab-switcher {
   display: flex;
   gap: 6px;
@@ -144,6 +146,7 @@ body {
   padding: 16px 20px 48px;
 }
 
+/* Upload card */
 .upload-card {
   display: flex;
   align-items: center;
@@ -203,6 +206,12 @@ body {
   overflow: hidden;
   background: var(--paper-raised);
   box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.item-card:active {
+  transform: scale(0.97);
 }
 
 .item-card img {
@@ -242,6 +251,7 @@ body {
   text-overflow: ellipsis;
 }
 
+/* Season pills */
 .season-pills {
   display: flex;
   flex-wrap: wrap;
@@ -266,6 +276,7 @@ body {
   color: #fff;
 }
 
+/* Generate button — denim texture + topstitch */
 .generate-btn {
   position: relative;
   width: 100%;
@@ -304,6 +315,7 @@ body {
   transform: none;
 }
 
+/* Outfit cards */
 .outfit-list {
   display: flex;
   flex-direction: column;
@@ -355,4 +367,110 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.4px;
   color: var(--ink-soft);
+}
+
+/* Edit/delete bottom sheet */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(23, 20, 15, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 50;
+}
+
+.edit-sheet {
+  width: 100%;
+  max-width: 480px;
+  background: var(--paper);
+  border-radius: 20px 20px 0 0;
+  padding: 12px 20px calc(28px + env(safe-area-inset-bottom));
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.edit-sheet-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+  margin: 0 auto 16px;
+}
+
+.edit-sheet-image {
+  width: 100%;
+  max-width: 160px;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 14px;
+  display: block;
+  margin: 0 auto 20px;
+  border: 1px solid var(--line);
+}
+
+.edit-field-label {
+  display: block;
+  font: 700 11px var(--sans);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--ink-soft);
+  margin: 0 0 8px;
+}
+
+.edit-sheet .season-pills {
+  margin-bottom: 20px;
+}
+
+.edit-color-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: 500 14px var(--sans);
+  color: var(--ink);
+  background: var(--paper-raised);
+  margin-bottom: 24px;
+}
+.edit-color-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.edit-sheet-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-delete-btn {
+  flex: 1;
+  padding: 14px;
+  border: 1px solid var(--error);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--error);
+  font: 700 13px var(--sans);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+.edit-delete-btn:disabled {
+  opacity: 0.6;
+}
+
+.edit-save-btn {
+  flex: 2;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  font: 700 13px var(--sans);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+.edit-save-btn:disabled {
+  opacity: 0.6;
 }

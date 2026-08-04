@@ -49,6 +49,7 @@ function App() {
   const [items, setItems] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [colorFilter, setColorFilter] = useState("");
   const fileInputRef = useRef(null);
 
   const [outfits, setOutfits] = useState([]);
@@ -56,6 +57,16 @@ function App() {
   const [generating, setGenerating] = useState(false);
   const [outfitError, setOutfitError] = useState(null);
   const [hasGenerated, setHasGenerated] = useState(false);
+
+  // edit/delete sheet state
+  const [editingItem, setEditingItem] = useState(null);
+  const [editForm, setEditForm] = useState({
+    category: "",
+    color: "",
+    season: "",
+  });
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     fetchItems();
@@ -117,9 +128,59 @@ function App() {
     }
   };
 
-  const visibleItems = categoryFilter
-    ? items.filter((item) => item.category === categoryFilter)
-    : items;
+  const openEditSheet = (item) => {
+    setEditingItem(item);
+    setEditForm({
+      category: item.category || "",
+      color: item.color || "",
+      season: item.season || "",
+    });
+  };
+
+  const closeEditSheet = () => {
+    setEditingItem(null);
+  };
+
+  const handleSaveEdit = async () => {
+    setSavingEdit(true);
+    try {
+      await axios.put(`${API_URL}/items/${editingItem.id}`, editForm);
+      await fetchItems();
+      setEditingItem(null);
+    } catch (err) {
+      console.error("Failed to update item:", err);
+      alert("Could not save changes, please try again");
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
+  const handleDeleteItem = async () => {
+    if (!window.confirm("Delete this item from your closet?")) return;
+    setDeletingId(editingItem.id);
+    try {
+      await axios.delete(`${API_URL}/items/${editingItem.id}`);
+      await fetchItems();
+      setEditingItem(null);
+    } catch (err) {
+      console.error("Failed to delete item:", err);
+      alert("Could not delete item, please try again");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const colorOptions = [
+    ...new Set(items.map((item) => item.color).filter(Boolean)),
+  ];
+
+  const visibleItems = items.filter((item) => {
+    const matchesCategory = categoryFilter
+      ? item.category === categoryFilter
+      : true;
+    const matchesColor = colorFilter ? item.color === colorFilter : true;
+    return matchesCategory && matchesColor;
+  });
 
   return (
     <div className="app-shell">
@@ -166,17 +227,39 @@ function App() {
             </label>
 
             {items.length > 0 && (
-              <div className="season-pills">
-                {CATEGORIES.map((c) => (
-                  <button
-                    key={c.value}
-                    className={`pill ${categoryFilter === c.value ? "active" : ""}`}
-                    onClick={() => setCategoryFilter(c.value)}
-                  >
-                    {c.label}
-                  </button>
-                ))}
-              </div>
+              <>
+                <div className="season-pills">
+                  {CATEGORIES.map((c) => (
+                    <button
+                      key={c.value}
+                      className={`pill ${categoryFilter === c.value ? "active" : ""}`}
+                      onClick={() => setCategoryFilter(c.value)}
+                    >
+                      {c.label}
+                    </button>
+                  ))}
+                </div>
+
+                {colorOptions.length > 0 && (
+                  <div className="season-pills">
+                    <button
+                      className={`pill ${colorFilter === "" ? "active" : ""}`}
+                      onClick={() => setColorFilter("")}
+                    >
+                      All colors
+                    </button>
+                    {colorOptions.map((c) => (
+                      <button
+                        key={c}
+                        className={`pill ${colorFilter === c ? "active" : ""}`}
+                        onClick={() => setColorFilter(c)}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
 
             {items.length === 0 ? (
@@ -184,11 +267,15 @@ function App() {
                 Your closet is empty — add your first piece.
               </p>
             ) : visibleItems.length === 0 ? (
-              <p className="empty-state">No pieces in this category yet.</p>
+              <p className="empty-state">No pieces match these filters.</p>
             ) : (
               <div className="item-grid">
                 {visibleItems.map((item) => (
-                  <div key={item.id} className="item-card">
+                  <div
+                    key={item.id}
+                    className="item-card"
+                    onClick={() => openEditSheet(item)}
+                  >
                     <img src={item.image_url} alt="clothing item" />
                     <TagChip category={item.category} color={item.color} />
                   </div>
@@ -254,6 +341,78 @@ function App() {
           </section>
         )}
       </main>
+
+      {editingItem && (
+        <div className="modal-overlay" onClick={closeEditSheet}>
+          <div className="edit-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="edit-sheet-handle" />
+
+            <img
+              src={editingItem.image_url}
+              alt="editing item"
+              className="edit-sheet-image"
+            />
+
+            <label className="edit-field-label">Category</label>
+            <div className="season-pills">
+              {CATEGORIES.filter((c) => c.value).map((c) => (
+                <button
+                  key={c.value}
+                  className={`pill ${editForm.category === c.value ? "active" : ""}`}
+                  onClick={() =>
+                    setEditForm((f) => ({ ...f, category: c.value }))
+                  }
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+
+            <label className="edit-field-label">Season</label>
+            <div className="season-pills">
+              {SEASONS.filter((s) => s.value).map((s) => (
+                <button
+                  key={s.value}
+                  className={`pill ${editForm.season === s.value ? "active" : ""}`}
+                  onClick={() =>
+                    setEditForm((f) => ({ ...f, season: s.value }))
+                  }
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+
+            <label className="edit-field-label">Color</label>
+            <input
+              type="text"
+              className="edit-color-input"
+              value={editForm.color}
+              onChange={(e) =>
+                setEditForm((f) => ({ ...f, color: e.target.value }))
+              }
+              placeholder="e.g. navy, olive, cream"
+            />
+
+            <div className="edit-sheet-actions">
+              <button
+                className="edit-delete-btn"
+                onClick={handleDeleteItem}
+                disabled={deletingId === editingItem.id}
+              >
+                {deletingId === editingItem.id ? "Deleting..." : "Delete"}
+              </button>
+              <button
+                className="edit-save-btn"
+                onClick={handleSaveEdit}
+                disabled={savingEdit}
+              >
+                {savingEdit ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
