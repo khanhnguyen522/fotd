@@ -49,7 +49,9 @@ body {
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
+  min-height: 100vh;
   min-height: 100svh;
+  min-height: 100dvh;
   overflow-x: hidden;
   box-sizing: border-box;
   display: flex;
@@ -486,7 +488,9 @@ body {
 /* Lock screen */
 .lock-screen {
   width: 100%;
+  min-height: 100vh;
   min-height: 100svh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
