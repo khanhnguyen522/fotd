@@ -3,9 +3,13 @@ const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const pool = require("./db");
 const { tagClothingImage } = require("./aiTagging");
 const { generateOutfits } = require("./outfitGenerator");
+const { requireAuth } = require("./authMiddleware");
 
 const app = express();
 app.use(cors());
@@ -39,8 +43,37 @@ app.get("/health", async (req, res) => {
   }
 });
 
+// login — single shared password for the one owner of this app.
+// The password is hashed with bcrypt and stored only in an env var —
+// there is no users table, since this app has exactly one user.
+app.post("/auth/login", async (req, res) => {
+  try {
+    const { password } = req.body;
+    if (!password) {
+      return res.status(400).json({ error: "Password is required" });
+    }
+
+    const validPassword = await bcrypt.compare(
+      password,
+      process.env.APP_PASSWORD_HASH,
+    );
+
+    if (!validPassword) {
+      return res.status(401).json({ error: "Wrong password" });
+    }
+
+    const token = jwt.sign({ role: "owner" }, process.env.JWT_SECRET, {
+      expiresIn: "30d",
+    });
+
+    res.json({ token });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // upload route — accepts a single file from the field named "image"
-app.post("/items", upload.single("image"), async (req, res) => {
+app.post("/items", requireAuth, upload.single("image"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No image file was uploaded" });
@@ -71,7 +104,7 @@ app.post("/items", upload.single("image"), async (req, res) => {
   }
 });
 
-app.get("/outfits", async (req, res) => {
+app.get("/outfits", requireAuth, async (req, res) => {
   try {
     const { season } = req.query; // optional
     const result = await pool.query("SELECT * FROM items");
@@ -83,7 +116,7 @@ app.get("/outfits", async (req, res) => {
 });
 
 // get all wardrobe items
-app.get("/items", async (req, res) => {
+app.get("/items", requireAuth, async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT * FROM items ORDER BY created_at DESC",
@@ -95,7 +128,7 @@ app.get("/items", async (req, res) => {
 });
 
 // update an item's tags (category, color, season, note)
-app.put("/items/:id", async (req, res) => {
+app.put("/items/:id", requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const { category, color, season, note } = req.body;
@@ -116,9 +149,10 @@ app.put("/items/:id", async (req, res) => {
 });
 
 // delete an item and its uploaded image file
-app.delete("/items/:id", async (req, res) => {
+app.delete("/items/:id", requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
+
     const result = await pool.query(
       "DELETE FROM items WHERE id = $1 RETURNING *",
       [id],
@@ -128,17 +162,15 @@ app.delete("/items/:id", async (req, res) => {
       return res.status(404).json({ error: "Item not found" });
     }
 
-    // best-effort cleanup of the image file on disk
     const deletedItem = result.rows[0];
     const filename = deletedItem.image_url.split("/uploads/")[1];
     if (filename) {
       const filePath = path.join("uploads", filename);
       fs.unlink(filePath, (err) => {
-        if (err) {
-          console.error("Failed to delete image file:", err.message);
-        }
+        if (err) console.error("Failed to delete image file:", err.message);
       });
     }
+
     res.json({ success: true, deleted: deletedItem });
   } catch (err) {
     res.status(500).json({ error: err.message });

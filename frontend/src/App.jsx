@@ -1,8 +1,30 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import LoginScreen from "./LoginScreen";
 import "./App.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
+
+// attach the JWT to every request, and bounce back to the lock screen
+// if the token is missing/expired (backend responds 401)
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem("fotd_token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("fotd_token");
+      window.location.reload();
+    }
+    return Promise.reject(error);
+  },
+);
 
 const SEASONS = [
   { value: "", label: "Any" },
@@ -45,6 +67,8 @@ function HandleIcon() {
 }
 
 function App() {
+  const [token, setToken] = useState(() => localStorage.getItem("fotd_token"));
+
   const [activeTab, setActiveTab] = useState("closet");
 
   const [items, setItems] = useState([]);
@@ -74,8 +98,8 @@ function App() {
   const dragStartY = useRef(0);
 
   useEffect(() => {
-    fetchItems();
-  }, []);
+    if (token) fetchItems();
+  }, [token]);
 
   // lock background scroll while the edit sheet is open
   useEffect(() => {
@@ -100,6 +124,11 @@ function App() {
     } catch (err) {
       console.error("Failed to fetch items:", err);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("fotd_token");
+    setToken(null);
   };
 
   const handleFileChange = async (e) => {
@@ -225,9 +254,16 @@ function App() {
     return matchesCategory && matchesColor;
   });
 
+  if (!token) {
+    return <LoginScreen onLogin={(t) => setToken(t)} />;
+  }
+
   return (
     <div className="app-shell">
       <header className="app-header">
+        <button className="logout-btn" onClick={handleLogout}>
+          Log out
+        </button>
         <div className="wordmark">
           <span className="wordmark-hole" />
           <span className="wordmark-text">FOTD</span>

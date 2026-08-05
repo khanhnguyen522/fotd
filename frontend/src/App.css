@@ -61,6 +61,7 @@ body {
 
 /* Header — denim, the app's core material */
 .app-header {
+  position: relative;
   background-color: var(--accent-dark);
   background-image: var(--twill);
   padding: calc(34px + env(safe-area-inset-top)) 20px 26px;
@@ -480,4 +481,81 @@ body {
 }
 .edit-save-btn:disabled {
   opacity: 0.6;
+}
+
+/* Lock screen */
+.lock-screen {
+  width: 100%;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent-dark);
+  background-image: var(--twill);
+  padding: 24px;
+  padding-top: calc(24px + env(safe-area-inset-top));
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+}
+
+.lock-card {
+  width: 100%;
+  max-width: 340px;
+  text-align: center;
+}
+
+.lock-card .wordmark {
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.lock-form {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.lock-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 12px;
+  font: 500 15px var(--sans);
+  color: var(--ink);
+  background: var(--paper-raised);
+  text-align: center;
+  letter-spacing: 2px;
+}
+.lock-input:focus {
+  outline: 2px solid var(--stitch);
+  outline-offset: 2px;
+}
+
+.lock-form .error-text {
+  color: #f0b8a8;
+  margin: -4px 0 0;
+}
+
+.lock-form .generate-btn {
+  margin-bottom: 0;
+}
+
+/* Logout button, tucked into the header */
+.logout-btn {
+  position: absolute;
+  top: calc(16px + env(safe-area-inset-top));
+  right: 20px;
+  padding: 6px 12px;
+  border: 1px solid var(--stitch);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--paper-raised);
+  font: 600 11px var(--sans);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  opacity: 0.8;
+}
+.logout-btn:active {
+  opacity: 1;
 }
