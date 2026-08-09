@@ -6,9 +6,15 @@ const anthropic = new Anthropic({
 });
 
 const tagClothingImage = async (imagePath) => {
-  // convert whatever format the image is (avif, webp, jpeg, png...) into standard PNG buffer in memory
-  const pngBuffer = await sharp(imagePath).png().toBuffer();
-  const base64Image = pngBuffer.toString("base64");
+  // resize to a sane max dimension and re-encode as JPEG — Claude's vision
+  // pipeline downscales large images internally anyway, and JPEG compression
+  // keeps the payload well under the 10MB base64 limit (PNG was ballooning
+  // phone photos up to 15-20MB since it's lossless).
+  const jpegBuffer = await sharp(imagePath)
+    .resize(1568, 1568, { fit: "inside", withoutEnlargement: true })
+    .jpeg({ quality: 85 })
+    .toBuffer();
+  const base64Image = jpegBuffer.toString("base64");
 
   const response = await anthropic.messages.create({
     model: "claude-haiku-4-5-20251001",
@@ -21,7 +27,7 @@ const tagClothingImage = async (imagePath) => {
             type: "image",
             source: {
               type: "base64",
-              media_type: "image/png",
+              media_type: "image/jpeg",
               data: base64Image,
             },
           },
