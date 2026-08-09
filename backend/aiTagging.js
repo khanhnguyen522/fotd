@@ -28,9 +28,15 @@ const tagClothingImage = async (imagePath) => {
           {
             type: "text",
             text: `Look at this clothing item image and respond ONLY with a JSON object, no other text, no markdown fences, in this exact format:
-{"category": "top|bottom|shoes|outerwear|accessory", "color": "main color in one word", "seasons": ["spring", "summer", "fall", "winter"]}
+{"category": "top|midlayer|bottom|shoes|outerwear|accessory", "color": "main color in one word", "seasons": ["spring", "summer", "fall", "winter"]}
 
-For "seasons", include every season this item is reasonably suited for as an array (a heavy wool coat might just be ["fall", "winter"], a light t-shirt might be ["spring", "summer"], a versatile item might be all four). Use ["all"] only if it truly works in every season equally.`,
+Category guide:
+- "top": worn directly against skin (t-shirts, tank tops, button-downs, blouses)
+- "midlayer": too warm, thick, or itchy to wear against bare skin, but not a true weatherproof outer layer either (sweaters, cardigans, fleece pullovers, vests) — these need a "top" underneath them
+- "outerwear": the outermost layer, typically weatherproof or structured (coats, jackets, blazers)
+- "bottom", "shoes", "accessory": as usual
+
+For "seasons", include every season this item is reasonably suited for as an array (a heavy wool sweater might just be ["fall", "winter"], a light t-shirt might be ["spring", "summer"], a versatile item might be all four). Use ["all"] only if it truly works in every season equally.`,
           },
         ],
       },

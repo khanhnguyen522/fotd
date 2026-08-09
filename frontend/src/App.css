@@ -342,13 +342,8 @@ body {
 
 .outfit-pieces {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
   gap: 10px;
-}
-@media (max-width: 380px) {
-  .outfit-pieces {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 .outfit-piece {

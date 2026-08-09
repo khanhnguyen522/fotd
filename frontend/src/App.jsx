@@ -37,6 +37,7 @@ const SEASONS = [
 const CATEGORIES = [
   { value: "", label: "All" },
   { value: "top", label: "Tops" },
+  { value: "midlayer", label: "Mid-layers" },
   { value: "bottom", label: "Bottoms" },
   { value: "shoes", label: "Shoes" },
   { value: "outerwear", label: "Outerwear" },
@@ -407,15 +408,16 @@ function App() {
                     </span>
                   </div>
                   <div className="outfit-pieces">
-                    {["top", "bottom", "shoes", "outerwear"].map((slot) =>
-                      outfit[slot] ? (
-                        <div key={slot} className="outfit-piece">
-                          <img src={outfit[slot].image_url} alt={slot} />
-                          <span className="piece-label">
-                            {outfit[slot].color}
-                          </span>
-                        </div>
-                      ) : null,
+                    {["top", "midlayer", "bottom", "shoes", "outerwear"].map(
+                      (slot) =>
+                        outfit[slot] ? (
+                          <div key={slot} className="outfit-piece">
+                            <img src={outfit[slot].image_url} alt={slot} />
+                            <span className="piece-label">
+                              {outfit[slot].color}
+                            </span>
+                          </div>
+                        ) : null,
                     )}
                   </div>
                 </div>

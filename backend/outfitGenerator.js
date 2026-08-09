@@ -27,7 +27,7 @@ const colorScore = (colorA, colorB) => {
   return 0; // unknown pairing, neutral/no bonus
 };
 
-// filter items by season — items can now belong to multiple seasons
+// filter items by season — items can belong to multiple seasons
 // (e.g. seasons: ["fall", "winter"]). Items tagged "all", or with no
 // seasons set at all, match every season filter.
 const filterBySeason = (items, season) => {
@@ -50,6 +50,7 @@ const filterBySeason = (items, season) => {
 const groupByCategory = (items) => {
   const groups = {
     top: [],
+    midlayer: [],
     bottom: [],
     shoes: [],
     outerwear: [],
@@ -94,6 +95,9 @@ const generateOutfits = (items, { season = null, count = 5 } = {}) => {
   for (let i = 0; i < SAMPLE_SIZE; i++) {
     const outfit = {
       top: grouped.top[Math.floor(Math.random() * grouped.top.length)],
+      midlayer: grouped.midlayer.length
+        ? grouped.midlayer[Math.floor(Math.random() * grouped.midlayer.length)]
+        : null,
       bottom: grouped.bottom[Math.floor(Math.random() * grouped.bottom.length)],
       shoes: grouped.shoes[Math.floor(Math.random() * grouped.shoes.length)],
       outerwear: grouped.outerwear.length
