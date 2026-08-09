@@ -27,14 +27,23 @@ const colorScore = (colorA, colorB) => {
   return 0; // unknown pairing, neutral/no bonus
 };
 
-// filter items by season (items tagged "all" match every season)
+// filter items by season — items can now belong to multiple seasons
+// (e.g. seasons: ["fall", "winter"]). Items tagged "all", or with no
+// seasons set at all, match every season filter.
 const filterBySeason = (items, season) => {
   if (!season) {
     return items;
   }
-  return items.filter(
-    (item) => item.season === season || item.season === "all",
-  );
+  return items.filter((item) => {
+    const seasons = item.seasons || [];
+    if (!seasons.length) {
+      return true;
+    }
+    if (seasons.includes("all")) {
+      return true;
+    }
+    return seasons.includes(season);
+  });
 };
 
 // group items by category

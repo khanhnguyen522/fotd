@@ -88,7 +88,7 @@ function App() {
   const [editForm, setEditForm] = useState({
     category: "",
     color: "",
-    season: "",
+    seasons: [],
     note: "",
   });
   const [savingEdit, setSavingEdit] = useState(false);
@@ -183,7 +183,7 @@ function App() {
     setEditForm({
       category: item.category || "",
       color: item.color || "",
-      season: item.season || "",
+      seasons: item.seasons && item.seasons.length ? item.seasons : [],
       note: item.note || "",
     });
     setDragY(0);
@@ -465,14 +465,21 @@ function App() {
               ))}
             </div>
 
-            <label className="edit-field-label">Season</label>
+            <label className="edit-field-label">
+              Seasons (tap to toggle, pick as many as fit)
+            </label>
             <div className="season-pills">
               {SEASONS.filter((s) => s.value).map((s) => (
                 <button
                   key={s.value}
-                  className={`pill ${editForm.season === s.value ? "active" : ""}`}
+                  className={`pill ${editForm.seasons.includes(s.value) ? "active" : ""}`}
                   onClick={() =>
-                    setEditForm((f) => ({ ...f, season: s.value }))
+                    setEditForm((f) => ({
+                      ...f,
+                      seasons: f.seasons.includes(s.value)
+                        ? f.seasons.filter((v) => v !== s.value)
+                        : [...f.seasons, s.value],
+                    }))
                   }
                 >
                   {s.label}

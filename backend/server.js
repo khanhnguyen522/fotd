@@ -44,8 +44,6 @@ app.get("/health", async (req, res) => {
 });
 
 // login — single shared password for the one owner of this app.
-// The password is hashed with bcrypt and stored only in an env var —
-// there is no users table, since this app has exactly one user.
 app.post("/auth/login", async (req, res) => {
   try {
     const { password } = req.body;
@@ -83,7 +81,7 @@ app.post("/items", requireAuth, upload.single("image"), async (req, res) => {
     const imagePath = req.file.path;
 
     // call Claude to auto-tag the clothing item
-    let tags = { category: null, color: null, season: null };
+    let tags = { category: null, color: null, seasons: ["all"] };
     try {
       tags = await tagClothingImage(imagePath);
     } catch (aiErr) {
@@ -94,8 +92,8 @@ app.post("/items", requireAuth, upload.single("image"), async (req, res) => {
     }
 
     const result = await pool.query(
-      "INSERT INTO items (image_url, category, color, season) VALUES ($1, $2, $3, $4) RETURNING *",
-      [imageUrl, tags.category, tags.color, tags.season],
+      "INSERT INTO items (image_url, category, color, seasons) VALUES ($1, $2, $3, $4) RETURNING *",
+      [imageUrl, tags.category, tags.color, tags.seasons],
     );
 
     res.status(201).json(result.rows[0]);
@@ -127,15 +125,15 @@ app.get("/items", requireAuth, async (req, res) => {
   }
 });
 
-// update an item's tags (category, color, season, note)
+// update an item's tags (category, color, seasons, note)
 app.put("/items/:id", requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
-    const { category, color, season, note } = req.body;
+    const { category, color, seasons, note } = req.body;
 
     const result = await pool.query(
-      "UPDATE items SET category = $1, color = $2, season = $3, note = $4 WHERE id = $5 RETURNING *",
-      [category, color, season, note, id],
+      "UPDATE items SET category = $1, color = $2, seasons = $3, note = $4 WHERE id = $5 RETURNING *",
+      [category, color, seasons, note, id],
     );
 
     if (result.rows.length === 0) {

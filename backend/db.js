@@ -27,6 +27,22 @@ const createTables = async () => {
     ALTER TABLE items ADD COLUMN IF NOT EXISTS note VARCHAR(100)
   `);
 
+  // add the new multi-season column (array of text, e.g. {fall,winter})
+  await pool.query(`
+    ALTER TABLE items ADD COLUMN IF NOT EXISTS seasons TEXT[] DEFAULT '{}'
+  `);
+
+  // one-time migration: copy each item's old single "season" value into the
+  // new "seasons" array, only for rows that haven't been migrated yet
+  await pool.query(`
+    UPDATE items
+    SET seasons = CASE
+      WHEN season IS NULL OR season = '' THEN ARRAY['all']::text[]
+      ELSE ARRAY[season]::text[]
+    END
+    WHERE seasons = '{}' OR seasons IS NULL
+  `);
+
   console.log("FOTD tables ready");
 };
 

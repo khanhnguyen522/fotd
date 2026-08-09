@@ -28,7 +28,9 @@ const tagClothingImage = async (imagePath) => {
           {
             type: "text",
             text: `Look at this clothing item image and respond ONLY with a JSON object, no other text, no markdown fences, in this exact format:
-{"category": "top|bottom|shoes|outerwear|accessory", "color": "main color in one word", "season": "spring|summer|fall|winter|all"}`,
+{"category": "top|bottom|shoes|outerwear|accessory", "color": "main color in one word", "seasons": ["spring", "summer", "fall", "winter"]}
+
+For "seasons", include every season this item is reasonably suited for as an array (a heavy wool coat might just be ["fall", "winter"], a light t-shirt might be ["spring", "summer"], a versatile item might be all four). Use ["all"] only if it truly works in every season equally.`,
           },
         ],
       },
@@ -38,8 +40,14 @@ const tagClothingImage = async (imagePath) => {
   const textBlock = response.content.find((block) => block.type === "text");
   const raw = textBlock.text.trim();
   const clean = raw.replace(/```json|```/g, "").trim();
+  const parsed = JSON.parse(clean);
 
-  return JSON.parse(clean);
+  // guard against malformed/missing seasons from the model
+  if (!Array.isArray(parsed.seasons) || parsed.seasons.length === 0) {
+    parsed.seasons = ["all"];
+  }
+
+  return parsed;
 };
 
 module.exports = { tagClothingImage };
