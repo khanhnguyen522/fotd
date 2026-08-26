@@ -1,36 +1,43 @@
-require("dotenv").config();
+require("dotenv").config(); // MUST be first — local modules (./s3) read process.env at require-time
+
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const pool = require("./db");
 const { tagClothingImage } = require("./aiTagging");
 const { generateOutfits } = require("./outfitGenerator");
 const { requireAuth } = require("./authMiddleware");
+const { uploadToS3, deleteFromS3, getSignedPhotoUrl } = require("./s3");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// serve uploaded images as static files, e.g. http://localhost:3001/uploads/filename.jpg
-app.use("/uploads", express.static("uploads"));
+// no more local disk storage — files stay in memory just long enough to upload to S3
+const upload = multer({ storage: multer.memoryStorage() });
 
-// configure multer: save files to uploads/ folder, generate unique filenames
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => {
-    const uniqueName =
-      Date.now() +
-      "-" +
-      Math.round(Math.random() * 1e9) +
-      path.extname(file.originalname);
-    cb(null, uniqueName);
-  },
+// build a safe S3 key for a wardrobe item (never undefined/empty)
+const buildImageKey = (originalname) => {
+  const safeName = (originalname || "item").replace(/[^a-zA-Z0-9._-]/g, "_");
+  return `wardrobe/${Date.now()}-${safeName}`;
+};
+
+// attach a fresh signed URL to a single item row
+const withSignedUrl = async (item) => ({
+  ...item,
+  image_url: await getSignedPhotoUrl(item.image_url),
 });
-const upload = multer({ storage });
+
+// attach signed URLs to every item slot in a generated outfit
+const signOutfit = async (outfit) => {
+  const signed = {};
+  for (const [slot, item] of Object.entries(outfit)) {
+    signed[slot] = item ? await withSignedUrl(item) : null;
+  }
+  return signed;
+};
 
 app.get("/health", async (req, res) => {
   try {
@@ -66,6 +73,7 @@ app.post("/auth/login", async (req, res) => {
 
     res.json({ token });
   } catch (err) {
+    console.error("LOGIN ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -77,27 +85,37 @@ app.post("/items", requireAuth, upload.single("image"), async (req, res) => {
       return res.status(400).json({ error: "No image file was uploaded" });
     }
 
-    const imageUrl = `${process.env.BASE_URL}/uploads/${req.file.filename}`;
-    const imagePath = req.file.path;
-
-    // call Claude to auto-tag the clothing item
+    // call Claude to auto-tag the clothing item — this also returns a
+    // resized/compressed JPEG buffer, which is what we upload to S3
     let tags = { category: null, color: null, seasons: ["all"] };
+    let uploadBuffer = req.file.buffer;
+    let uploadMimeType = req.file.mimetype;
     try {
-      tags = await tagClothingImage(imagePath);
+      const result = await tagClothingImage(req.file.buffer);
+      tags = result.tags;
+      uploadBuffer = result.buffer;
+      uploadMimeType = result.mimeType;
     } catch (aiErr) {
-      console.error(
-        "AI tagging failed, saving item without tags:",
-        aiErr.message,
-      );
+      console.error("AI tagging failed, saving item without tags:", aiErr);
     }
+
+    const key = buildImageKey(req.file.originalname);
+    console.log(
+      "UPLOAD: uploading to S3 with key =",
+      key,
+      "bucket =",
+      process.env.S3_BUCKET_NAME,
+    );
+    await uploadToS3(uploadBuffer, key, uploadMimeType);
 
     const result = await pool.query(
       "INSERT INTO items (image_url, category, color, seasons) VALUES ($1, $2, $3, $4) RETURNING *",
-      [imageUrl, tags.category, tags.color, tags.seasons],
+      [key, tags.category, tags.color, tags.seasons],
     );
 
-    res.status(201).json(result.rows[0]);
+    res.status(201).json(await withSignedUrl(result.rows[0]));
   } catch (err) {
+    console.error("UPLOAD ITEM ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -107,8 +125,15 @@ app.get("/outfits", requireAuth, async (req, res) => {
     const { season } = req.query; // optional
     const result = await pool.query("SELECT * FROM items");
     const outfits = generateOutfits(result.rows, { season, count: 5 });
-    res.json(outfits);
+
+    if (outfits.error) {
+      return res.json(outfits); // pass through the "not enough items" message as-is
+    }
+
+    const signedOutfits = await Promise.all(outfits.map(signOutfit));
+    res.json(signedOutfits);
   } catch (err) {
+    console.error("GET OUTFITS ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -119,8 +144,25 @@ app.get("/items", requireAuth, async (req, res) => {
     const result = await pool.query(
       "SELECT * FROM items ORDER BY created_at DESC",
     );
-    res.json(result.rows);
+    const withUrls = await Promise.all(
+      result.rows.map(async (row) => {
+        try {
+          return await withSignedUrl(row);
+        } catch (signErr) {
+          console.error(
+            "SIGN URL ERROR for item",
+            row.id,
+            "key:",
+            row.image_url,
+            signErr,
+          );
+          return { ...row, image_url: null };
+        }
+      }),
+    );
+    res.json(withUrls);
   } catch (err) {
+    console.error("GET ITEMS ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -140,13 +182,14 @@ app.put("/items/:id", requireAuth, async (req, res) => {
       return res.status(404).json({ error: "Item not found" });
     }
 
-    res.json(result.rows[0]);
+    res.json(await withSignedUrl(result.rows[0]));
   } catch (err) {
+    console.error("UPDATE ITEM ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
 
-// delete an item and its uploaded image file
+// delete an item and its S3 image
 app.delete("/items/:id", requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
@@ -161,16 +204,11 @@ app.delete("/items/:id", requireAuth, async (req, res) => {
     }
 
     const deletedItem = result.rows[0];
-    const filename = deletedItem.image_url.split("/uploads/")[1];
-    if (filename) {
-      const filePath = path.join("uploads", filename);
-      fs.unlink(filePath, (err) => {
-        if (err) console.error("Failed to delete image file:", err.message);
-      });
-    }
+    await deleteFromS3(deletedItem.image_url);
 
     res.json({ success: true, deleted: deletedItem });
   } catch (err) {
+    console.error("DELETE ITEM ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });

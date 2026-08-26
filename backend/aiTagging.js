@@ -5,12 +5,13 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-const tagClothingImage = async (imagePath) => {
+// accepts an image buffer directly (no more reading from disk)
+const tagClothingImage = async (imageBuffer) => {
   // resize to a sane max dimension and re-encode as JPEG — Claude's vision
   // pipeline downscales large images internally anyway, and JPEG compression
   // keeps the payload well under the 10MB base64 limit (PNG was ballooning
   // phone photos up to 15-20MB since it's lossless).
-  const jpegBuffer = await sharp(imagePath)
+  const jpegBuffer = await sharp(imageBuffer)
     .resize(1568, 1568, { fit: "inside", withoutEnlargement: true })
     .jpeg({ quality: 85 })
     .toBuffer();
@@ -59,7 +60,9 @@ For "seasons", include every season this item is reasonably suited for as an arr
     parsed.seasons = ["all"];
   }
 
-  return parsed;
+  // return the resized JPEG buffer too, so the caller can upload this
+  // smaller version to S3 instead of the original (often much larger) photo
+  return { tags: parsed, buffer: jpegBuffer, mimeType: "image/jpeg" };
 };
 
 module.exports = { tagClothingImage };
