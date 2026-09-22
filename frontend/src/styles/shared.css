@@ -1,0 +1,109 @@
+/* Wordmark + tagline — used by Header and LoginScreen */
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wordmark-hole {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid var(--paper);
+  opacity: 0.6;
+}
+
+.wordmark-text {
+  font: 700 34px var(--display);
+  letter-spacing: 1px;
+  color: var(--paper-raised);
+}
+
+.tagline {
+  margin: 8px 0 0;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--stitch);
+}
+
+/* Pills — used by ClosetTab, OutfitsTab and EditSheet */
+.season-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.pill {
+  padding: 9px 18px;
+  border: 1px solid var(--line);
+  background: var(--paper-raised);
+  border-radius: 999px;
+  font: 600 13px var(--sans);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* Primary action button — used by OutfitsTab and LoginScreen */
+.generate-btn {
+  position: relative;
+  width: 100%;
+  padding: 16px;
+  margin-bottom: 24px;
+  border: none;
+  border-radius: 12px;
+  background-color: var(--accent);
+  background-image: var(--twill);
+  color: #fff;
+  font: 700 14px var(--sans);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition:
+    transform 0.1s,
+    background-color 0.15s;
+}
+
+.generate-btn::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px dashed var(--stitch);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.generate-btn:active {
+  transform: scale(0.98);
+  background-color: var(--accent-dark);
+}
+.generate-btn:disabled {
+  opacity: 0.6;
+  transform: none;
+}
+
+/* Status text — used by ClosetTab, OutfitsTab and LoginScreen */
+.empty-state {
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 14px;
+  padding: 28px 0;
+}
+
+.error-text {
+  text-align: center;
+  color: var(--error);
+  font-size: 14px;
+  margin: 12px 0;
+  font-weight: 600;
+}

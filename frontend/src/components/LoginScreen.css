@@ -1,0 +1,57 @@
+.lock-screen {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent-dark);
+  background-image: var(--twill);
+  padding: 24px;
+  padding-top: calc(24px + env(safe-area-inset-top));
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+}
+
+.lock-card {
+  width: 100%;
+  max-width: 340px;
+  text-align: center;
+}
+
+.lock-card .wordmark {
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.lock-form {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.lock-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 12px;
+  font: 500 15px var(--sans);
+  color: var(--ink);
+  background: var(--paper-raised);
+  text-align: center;
+  letter-spacing: 2px;
+}
+.lock-input:focus {
+  outline: 2px solid var(--stitch);
+  outline-offset: 2px;
+}
+
+.lock-form .error-text {
+  color: #f0b8a8;
+  margin: -4px 0 0;
+}
+
+.lock-form .generate-btn {
+  margin-bottom: 0;
+}

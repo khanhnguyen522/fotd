@@ -1,0 +1,66 @@
+import { OUTFIT_SLOTS, SEASONS } from "../constants";
+import "./OutfitsTab.css";
+
+function OutfitsTab({
+  season,
+  onSeasonChange,
+  generating,
+  onGenerate,
+  outfitError,
+  hasGenerated,
+  outfits,
+}) {
+  return (
+    <section>
+      <div className="season-pills">
+        {SEASONS.map((s) => (
+          <button
+            key={s.value}
+            className={`pill ${season === s.value ? "active" : ""}`}
+            onClick={() => onSeasonChange(s.value)}
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+
+      <button
+        className="generate-btn"
+        onClick={onGenerate}
+        disabled={generating}
+      >
+        {generating ? "Styling..." : "Generate Outfits"}
+      </button>
+
+      {outfitError && <p className="error-text">{outfitError}</p>}
+
+      {!hasGenerated && !outfitError && (
+        <p className="empty-state">Tap the button to see outfit suggestions.</p>
+      )}
+
+      <div className="outfit-list">
+        {outfits.map((outfit, idx) => (
+          <div key={idx} className="outfit-card">
+            <div className="outfit-card-header">
+              <span className="outfit-number">
+                Look {String(idx + 1).padStart(2, "0")}
+              </span>
+            </div>
+            <div className="outfit-pieces">
+              {OUTFIT_SLOTS.map((slot) =>
+                outfit[slot] ? (
+                  <div key={slot} className="outfit-piece">
+                    <img src={outfit[slot].image_url} alt={slot} />
+                    <span className="piece-label">{outfit[slot].color}</span>
+                  </div>
+                ) : null,
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export default OutfitsTab;

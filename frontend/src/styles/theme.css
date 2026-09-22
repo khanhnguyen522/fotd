@@ -1,0 +1,47 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --paper: #f5f3ee;
+  --paper-raised: #fff;
+  --ink: #17140f;
+  --ink-soft: #8b8478;
+  --line: #e6e1d5;
+  --accent: #313f5e;
+  --accent-dark: #202a41;
+  --stitch: rgba(201, 163, 103, 0.6);
+  --error: #a8402b;
+  --display: "Fraunces", Georgia, serif;
+  --sans: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --twill:
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.12) 0 1px,
+      transparent 1px 4px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(0, 0, 0, 0.16) 2px 3px,
+      transparent 3px 4px
+    );
+  --shadow-sm: 0 1px 2px rgba(23, 20, 15, 0.06);
+  --shadow-md: 0 4px 12px rgba(23, 20, 15, 0.08);
+  --shadow-lg: 0 12px 28px rgba(23, 20, 15, 0.12);
+
+  font: 16px/1.5 var(--sans);
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+html {
+  width: 100%;
+  overflow-y: scroll;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}

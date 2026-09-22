@@ -1,0 +1,26 @@
+.app-header {
+  position: relative;
+  background-color: var(--accent-dark);
+  background-image: var(--twill);
+  padding: calc(34px + env(safe-area-inset-top)) 20px 26px;
+  text-align: center;
+}
+
+.logout-btn {
+  position: absolute;
+  top: calc(16px + env(safe-area-inset-top));
+  right: 20px;
+  padding: 6px 12px;
+  border: 1px solid var(--stitch);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--paper-raised);
+  font: 600 11px var(--sans);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  opacity: 0.8;
+}
+.logout-btn:active {
+  opacity: 1;
+}

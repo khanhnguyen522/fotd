@@ -1,0 +1,47 @@
+.outfit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.outfit-card {
+  border-radius: 16px;
+  padding: 16px;
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-lg);
+}
+
+.outfit-card-header {
+  margin-bottom: 12px;
+}
+.outfit-number {
+  font: 700 15px var(--display);
+  color: var(--accent);
+}
+
+.outfit-pieces {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 10px;
+}
+
+.outfit-piece {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.outfit-piece img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+}
+.piece-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--ink-soft);
+}
