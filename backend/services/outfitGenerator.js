@@ -21,10 +21,12 @@ const colorScore = (colorA, colorB) => {
   if (a === b) {
     return 1; // matching colors are a safe pairing
   }
-  if (COLOR_COMPATIBILITY[a]?.includes(b)) {
-    return 2; // known good pairing
-  }
-  return 0; // unknown pairing, neutral/no bonus
+  // check both directions — the compatibility table isn't fully symmetric
+  // (e.g. "red" lists "beige" but "beige" doesn't list "red" back), so
+  // checking only a→b made the score depend on which item was item A
+  const isCompatible =
+    COLOR_COMPATIBILITY[a]?.includes(b) || COLOR_COMPATIBILITY[b]?.includes(a);
+  return isCompatible ? 2 : 0; // known good pairing, else neutral/no bonus
 };
 
 // filter items by season — items can belong to multiple seasons

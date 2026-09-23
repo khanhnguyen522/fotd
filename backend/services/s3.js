@@ -1,9 +1,8 @@
-require("dotenv").config();
 const {
-  S3Client,
-  PutObjectCommand,
   DeleteObjectCommand,
   GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
 } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
@@ -50,4 +49,4 @@ const getSignedPhotoUrl = async (key) => {
   });
 };
 
-module.exports = { uploadToS3, deleteFromS3, getSignedPhotoUrl };
+module.exports = { deleteFromS3, getSignedPhotoUrl, uploadToS3 };
