@@ -48,6 +48,9 @@ function EditSheet({
           src={item.image_url}
           alt="editing item"
           className="edit-sheet-image"
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
         />
 
         <label className="edit-field-label">Category</label>
