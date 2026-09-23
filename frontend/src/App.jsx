@@ -26,7 +26,11 @@ function App() {
   return (
     <div className="app-shell">
       <Header onLogout={logout} />
-      <TabSwitcher activeTab={activeTab} onChange={setActiveTab} />
+      <TabSwitcher
+        activeTab={activeTab}
+        onChange={setActiveTab}
+        closetCount={closet.items.length}
+      />
 
       <main className="app-main">
         {activeTab === "closet" && (

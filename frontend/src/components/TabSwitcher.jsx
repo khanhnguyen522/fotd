@@ -6,7 +6,7 @@ const TABS = [
   { id: "outfits", label: "Outfits" },
 ];
 
-function TabSwitcher({ activeTab, onChange }) {
+function TabSwitcher({ activeTab, onChange, closetCount }) {
   return (
     <div className="tab-switcher">
       {TABS.map((tab) => (
@@ -16,7 +16,9 @@ function TabSwitcher({ activeTab, onChange }) {
           onClick={() => onChange(tab.id)}
         >
           {activeTab === tab.id && <HandleIcon />}
-          {tab.label}
+          {tab.id === "closet" && closetCount != null
+            ? `${tab.label} (${closetCount})`
+            : tab.label}
         </button>
       ))}
     </div>
