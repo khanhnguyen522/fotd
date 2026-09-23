@@ -13,20 +13,14 @@ export function useEditSheet(onItemsChanged) {
   const [isDraggingSheet, setIsDraggingSheet] = useState(false);
   const dragStartY = useRef(0);
 
-  // lock background scroll while the sheet is open
   useEffect(() => {
     if (!editingItem) return;
 
-    const scrollY = window.scrollY;
-    document.body.style.position = "fixed";
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = "100%";
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
     return () => {
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.width = "";
-      window.scrollTo(0, scrollY);
+      document.body.style.overflow = previousOverflow;
     };
   }, [editingItem]);
 
