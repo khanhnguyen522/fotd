@@ -4,6 +4,9 @@ import "./OutfitsTab.css";
 function OutfitsTab({
   season,
   onSeasonChange,
+  useWeather,
+  onToggleWeather,
+  weatherInfo,
   generating,
   onGenerate,
   outfitError,
@@ -13,16 +16,30 @@ function OutfitsTab({
   return (
     <section>
       <div className="season-pills">
-        {SEASONS.map((s) => (
-          <button
-            key={s.value}
-            className={`pill ${season === s.value ? "active" : ""}`}
-            onClick={() => onSeasonChange(s.value)}
-          >
-            {s.label}
-          </button>
-        ))}
+        <button
+          className={`pill ${useWeather ? "active" : ""}`}
+          onClick={() => onToggleWeather(!useWeather)}
+        >
+          Auto (weather)
+        </button>
+        {!useWeather &&
+          SEASONS.map((s) => (
+            <button
+              key={s.value}
+              className={`pill ${season === s.value ? "active" : ""}`}
+              onClick={() => onSeasonChange(s.value)}
+            >
+              {s.label}
+            </button>
+          ))}
       </div>
+
+      {weatherInfo && (
+        <p className="weather-note">
+          {Math.round(weatherInfo.temperatureF)}°F outside — showing{" "}
+          {weatherInfo.seasons.join("/")} picks
+        </p>
+      )}
 
       <button
         className="generate-btn"

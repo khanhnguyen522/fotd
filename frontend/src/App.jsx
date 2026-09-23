@@ -48,6 +48,9 @@ function App() {
           <OutfitsTab
             season={outfits.season}
             onSeasonChange={outfits.setSeason}
+            useWeather={outfits.useWeather}
+            onToggleWeather={outfits.setUseWeather}
+            weatherInfo={outfits.weatherInfo}
             generating={outfits.generating}
             onGenerate={outfits.generateOutfits}
             outfitError={outfits.outfitError}

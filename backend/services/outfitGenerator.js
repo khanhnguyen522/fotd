@@ -31,20 +31,24 @@ const colorScore = (colorA, colorB) => {
 
 // filter items by season — items can belong to multiple seasons
 // (e.g. seasons: ["fall", "winter"]). Items tagged "all", or with no
-// seasons set at all, match every season filter.
+// seasons set at all, match every filter. `season` can be a single
+// season string (manual pill selection) or an array of acceptable
+// seasons (e.g. computed from the current weather) — an item matches
+// if any of its seasons is in the wanted list.
 const filterBySeason = (items, season) => {
-  if (!season) {
+  if (!season || (Array.isArray(season) && season.length === 0)) {
     return items;
   }
+  const wanted = Array.isArray(season) ? season : [season];
   return items.filter((item) => {
-    const seasons = item.seasons || [];
-    if (!seasons.length) {
+    const itemSeasons = item.seasons || [];
+    if (!itemSeasons.length) {
       return true;
     }
-    if (seasons.includes("all")) {
+    if (itemSeasons.includes("all")) {
       return true;
     }
-    return seasons.includes(season);
+    return itemSeasons.some((s) => wanted.includes(s));
   });
 };
 
