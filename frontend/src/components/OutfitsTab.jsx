@@ -36,7 +36,9 @@ function OutfitsTab({
 
       {weatherInfo && (
         <p className="weather-note">
-          {Math.round(weatherInfo.temperatureF)}°F outside — showing{" "}
+          {Math.round(weatherInfo.temperatureF)}°F
+          {weatherInfo.isRainy ? ", rainy" : ""}
+          {weatherInfo.isWindy ? ", windy" : ""} outside — showing{" "}
           {weatherInfo.seasons.join("/")} picks
         </p>
       )}

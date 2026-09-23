@@ -1,3 +1,10 @@
+.weather-note {
+  margin: -6px 0 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
 .outfit-list {
   display: flex;
   flex-direction: column;
