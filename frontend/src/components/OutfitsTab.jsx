@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { OUTFIT_SLOTS, SEASONS } from "../constants";
+import ImageLightbox from "./ImageLightbox";
 import "./OutfitsTab.css";
 
 function OutfitsTab({
@@ -13,6 +15,8 @@ function OutfitsTab({
   hasGenerated,
   outfits,
 }) {
+  const [lightboxSrc, setLightboxSrc] = useState(null);
+
   return (
     <section>
       <div className="season-pills">
@@ -69,7 +73,11 @@ function OutfitsTab({
               {OUTFIT_SLOTS.map((slot) =>
                 outfit[slot] ? (
                   <div key={slot} className="outfit-piece">
-                    <img src={outfit[slot].image_url} alt={slot} />
+                    <img
+                      src={outfit[slot].image_url}
+                      alt={slot}
+                      onClick={() => setLightboxSrc(outfit[slot].image_url)}
+                    />
                     <span className="piece-label">{outfit[slot].color}</span>
                   </div>
                 ) : null,
@@ -78,6 +86,12 @@ function OutfitsTab({
           </div>
         ))}
       </div>
+
+      <ImageLightbox
+        src={lightboxSrc}
+        alt="clothing item"
+        onClose={() => setLightboxSrc(null)}
+      />
     </section>
   );
 }

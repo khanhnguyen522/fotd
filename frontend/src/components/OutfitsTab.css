@@ -44,6 +44,7 @@
   object-fit: cover;
   border-radius: 10px;
   border: 1px solid var(--line);
+  cursor: pointer;
 }
 .piece-label {
   font-size: 10px;

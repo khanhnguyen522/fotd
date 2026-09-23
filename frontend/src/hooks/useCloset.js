@@ -3,6 +3,7 @@ import client from "../api/client";
 
 export function useCloset(token) {
   const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("");
   const [colorFilter, setColorFilter] = useState("");
@@ -13,6 +14,8 @@ export function useCloset(token) {
       setItems(res.data);
     } catch (err) {
       console.error("Failed to fetch items:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,6 +62,7 @@ export function useCloset(token) {
     items,
     visibleItems,
     colorOptions,
+    loading,
     uploading,
     categoryFilter,
     setCategoryFilter,

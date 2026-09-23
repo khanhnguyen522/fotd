@@ -7,6 +7,7 @@ function ClosetTab({
   items,
   visibleItems,
   colorOptions,
+  loading,
   uploading,
   categoryFilter,
   onCategoryFilterChange,
@@ -76,7 +77,13 @@ function ClosetTab({
         </>
       )}
 
-      {items.length === 0 ? (
+      {loading ? (
+        <div className="item-grid">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="item-card skeleton-card" />
+          ))}
+        </div>
+      ) : items.length === 0 ? (
         <p className="empty-state">
           Your closet is empty — add your first piece.
         </p>

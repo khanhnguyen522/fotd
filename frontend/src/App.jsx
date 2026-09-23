@@ -38,6 +38,7 @@ function App() {
             items={closet.items}
             visibleItems={closet.visibleItems}
             colorOptions={closet.colorOptions}
+            loading={closet.loading}
             uploading={closet.uploading}
             categoryFilter={closet.categoryFilter}
             onCategoryFilterChange={closet.setCategoryFilter}
