@@ -1,4 +1,8 @@
-// basic color compatibility rules — pairs of colors considered to go well together
+const { colorScore: hexColorScore } = require("../utils/colorMath");
+
+// basic color compatibility rules — pairs of colors considered to go well
+// together. Kept as a fallback for items with no dominant_color hex yet
+// (e.g. tagged before that field existed).
 const COLOR_COMPATIBILITY = {
   black: ["white", "gray", "red", "blue", "beige", "pink", "black"],
   white: ["black", "blue", "red", "green", "gray", "brown", "white"],
@@ -11,8 +15,10 @@ const COLOR_COMPATIBILITY = {
   pink: ["gray", "white", "black"],
 };
 
-// score how well two colors pair together
-const colorScore = (colorA, colorB) => {
+// fallback score for two color *names* — scale kept at 0-2 to match the
+// magnitude hexColorScore is normalized down to below, so mixed outfits
+// (some items with dominant_color, some without) rank consistently
+const nameColorScore = (colorA, colorB) => {
   if (!colorA || !colorB) {
     return 0;
   }
@@ -27,6 +33,16 @@ const colorScore = (colorA, colorB) => {
   const isCompatible =
     COLOR_COMPATIBILITY[a]?.includes(b) || COLOR_COMPATIBILITY[b]?.includes(a);
   return isCompatible ? 2 : 0; // known good pairing, else neutral/no bonus
+};
+
+// score how well two items pair together. Prefers the hex-based harmony
+// score (0-100, scaled to the 0-2 range) when both items have a
+// dominant_color; falls back to the name-based table otherwise.
+const pairScore = (itemA, itemB) => {
+  if (itemA.dominant_color && itemB.dominant_color) {
+    return hexColorScore(itemA.dominant_color, itemB.dominant_color) / 50;
+  }
+  return nameColorScore(itemA.color, itemB.color);
 };
 
 // filter items by season — items can belong to multiple seasons
@@ -76,7 +92,7 @@ const scoreOutfit = (outfit) => {
   let score = 0;
   for (let i = 0; i < pieces.length; i++) {
     for (let j = i + 1; j < pieces.length; j++) {
-      score += colorScore(pieces[i].color, pieces[j].color);
+      score += pairScore(pieces[i], pieces[j]);
     }
   }
   return score;

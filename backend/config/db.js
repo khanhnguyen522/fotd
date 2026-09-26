@@ -28,6 +28,9 @@ const createTables = async () => {
   await pool.query(
     `ALTER TABLE items ADD COLUMN IF NOT EXISTS seasons TEXT[] DEFAULT '{}'`,
   );
+  await pool.query(
+    `ALTER TABLE items ADD COLUMN IF NOT EXISTS dominant_color VARCHAR(7)`,
+  );
 
   console.log("FOTD tables ready");
 };

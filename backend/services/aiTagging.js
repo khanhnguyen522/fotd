@@ -5,6 +5,8 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+const HEX_REGEX = /^#[0-9A-Fa-f]{6}$/;
+
 // accepts an image buffer directly (no more reading from disk)
 const tagClothingImage = async (imageBuffer) => {
   // resize to a sane max dimension and re-encode as JPEG — Claude's vision
@@ -35,13 +37,15 @@ const tagClothingImage = async (imageBuffer) => {
           {
             type: "text",
             text: `Look at this clothing item image and respond ONLY with a JSON object, no other text, no markdown fences, in this exact format:
-{"category": "top|midlayer|bottom|shoes|outerwear|accessory", "color": "main color in one word", "seasons": ["spring", "summer", "fall", "winter"]}
+{"category": "top|midlayer|bottom|shoes|outerwear|accessory", "color": "main color in one word", "dominant_color": "#RRGGBB", "seasons": ["spring", "summer", "fall", "winter"]}
 
 Category guide:
 - "top": worn directly against skin (t-shirts, tank tops, button-downs, blouses)
 - "midlayer": too warm, thick, or itchy to wear against bare skin, but not a true weatherproof outer layer either (sweaters, cardigans, fleece pullovers, vests) — these need a "top" underneath them
 - "outerwear": the outermost layer, typically weatherproof or structured (coats, jackets, blazers)
 - "bottom", "shoes", "accessory": as usual
+
+For "dominant_color", identify the single dominant hex color of the garment fabric itself — ignore background, shadows, and any model/mannequin skin. Pick the color that best represents the overall visual color of the item, not a small highlight or trim detail.
 
 For "seasons", include every season this item is reasonably suited for as an array (a heavy wool sweater might just be ["fall", "winter"], a light t-shirt might be ["spring", "summer"], a versatile item might be all four). Use ["all"] only if it truly works in every season equally.`,
           },
@@ -58,6 +62,16 @@ For "seasons", include every season this item is reasonably suited for as an arr
   // guard against malformed/missing seasons from the model
   if (!Array.isArray(parsed.seasons) || parsed.seasons.length === 0) {
     parsed.seasons = ["all"];
+  }
+
+  // guard against a malformed/missing hex from the model — store null rather
+  // than crash the upload; outfitGenerator falls back to name-based color
+  // scoring for items with no dominant_color
+  if (
+    typeof parsed.dominant_color !== "string" ||
+    !HEX_REGEX.test(parsed.dominant_color)
+  ) {
+    parsed.dominant_color = null;
   }
 
   // return the resized JPEG buffer too, so the caller can upload this

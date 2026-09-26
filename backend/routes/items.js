@@ -24,7 +24,12 @@ router.post(
 
     // call Claude to auto-tag the clothing item — this also returns a
     // resized/compressed JPEG buffer, which is what we upload to S3
-    let tags = { category: null, color: null, seasons: ["all"] };
+    let tags = {
+      category: null,
+      color: null,
+      dominant_color: null,
+      seasons: ["all"],
+    };
     let uploadBuffer = req.file.buffer;
     let uploadMimeType = req.file.mimetype;
     try {
@@ -40,8 +45,8 @@ router.post(
     await uploadToS3(uploadBuffer, key, uploadMimeType);
 
     const result = await pool.query(
-      "INSERT INTO items (image_url, category, color, seasons) VALUES ($1, $2, $3, $4) RETURNING *",
-      [key, tags.category, tags.color, tags.seasons],
+      "INSERT INTO items (image_url, category, color, dominant_color, seasons) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [key, tags.category, tags.color, tags.dominant_color, tags.seasons],
     );
 
     res.status(201).json(await withSignedUrl(result.rows[0]));
@@ -76,6 +81,8 @@ router.get(
 );
 
 // update an item's tags (category, color, seasons, note)
+// dominant_color is intentionally not editable here — it's AI-derived from
+// the photo, so it's re-tagged via a fresh upload rather than hand-edited
 router.put(
   "/:id",
   asyncHandler("UPDATE ITEM", async (req, res) => {
