@@ -1,5 +1,7 @@
 # FOTD (Fit of the Day)
 
+Live: [fotd-sable.vercel.app](https://fotd-sable.vercel.app/)
+
 AI-powered outfit generator PWA. Upload photos of your clothes, it auto-tags them, and spits out outfit ideas — pick a season manually, or let it check today's weather and figure that out for you.
 
 ## What it does
@@ -51,11 +53,76 @@ frontend/src/
   App.jsx                # just wires hooks into components, nothing fancy
 ```
 
-## Env vars
+## Running it locally
 
-Backend needs: `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `JWT_SECRET`, `APP_PASSWORD_HASH`, `ANTHROPIC_API_KEY`, `AWS_REGION`, `S3_BUCKET_NAME`, `PORT`
+You'll need Node 18+, a Postgres instance (or use `docker-compose.yml` in `backend/`), an S3 bucket, and an Anthropic API key.
 
-Frontend needs: `VITE_API_URL`
+**Backend:**
+
+```bash
+cd backend
+npm install
+```
+
+Make a `.env`:
+
+```
+PORT=3001
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=password
+DB_NAME=fotd
+JWT_SECRET=make up something long and random here
+APP_PASSWORD_HASH=bcrypt hash of your login password, not the plain password
+ANTHROPIC_API_KEY=your key
+AWS_REGION=us-east-2
+S3_BUCKET_NAME=your bucket
+```
+
+`APP_PASSWORD_HASH` needs to actually be a bcrypt hash, not the password itself — generate one with `bcryptjs` (`bcrypt.hash("yourpassword", 10)`) and paste the result in.
+
+```bash
+npm run dev
+```
+
+Tables get created automatically the first time it runs.
+
+**Frontend:**
+
+```bash
+cd frontend
+npm install
+```
+
+`.env`:
+
+```
+VITE_API_URL=http://localhost:3001
+```
+
+```bash
+npm run dev
+```
+
+## API
+
+Everything except `/auth/login` and `/health` needs an `Authorization: Bearer <token>` header.
+
+| Method | Route | What it does |
+|---|---|---|
+| GET | `/health` | DB connectivity check |
+| POST | `/auth/login` | log in with the shared password, get back a JWT |
+| GET | `/items` | your closet |
+| POST | `/items` | upload a photo (`image` field), Claude tags it, saved to S3 + DB |
+| PUT | `/items/:id` | edit category/color/seasons/note |
+| DELETE | `/items/:id` | delete an item and its S3 photo |
+| GET | `/outfits` | generate outfits, optional `?season=` |
+| GET | `/outfits/weather` | generate outfits from current weather, needs `?lat=&lon=` |
+
+## Deploying
+
+Push to `main` and Vercel picks up the frontend automatically. The backend doesn't auto-deploy though, you have to SSH into EC2, `git pull`, reinstall if `package.json` changed, and restart with PM2. Annoying but that's how it is for now.
 
 ## Why it's built this way
 
