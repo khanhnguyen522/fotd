@@ -5,7 +5,7 @@ const { generateOutfits } = require("../services/outfitGenerator");
 const { fetchCurrentWeather } = require("../services/weather");
 const { asyncHandler } = require("../utils/asyncHandler");
 const { signOutfit } = require("../utils/signedItems");
-const { isRainy, isWindy } = require("../utils/weatherConditions");
+const { isRainy, isWindy } = require("../utils/weatherCondition");
 const { temperatureToSeasons } = require("../utils/weatherToSeasons");
 
 const router = express.Router();
